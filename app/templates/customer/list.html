@@ -1,0 +1,59 @@
+<!DOCTYPE html>             
+<html>
+    <style>
+        table{width: 100%;  border-collapse: collapse;}
+        th, td{border: 1px solid #000000;}
+    </style>
+    <body>
+        {%  include "layout/header.html" %}
+        <table>
+            <thead>
+                <tr> 
+                    <th>
+                        #
+                    </th>
+                    <th >
+                       Họ tên
+                    </th>
+                    <th>
+                        Email
+                    </th>
+                    <th>
+                        Tuổi
+                    </th>
+                    <th>
+                        Nghề nghiệp
+                    </th>
+                    <th>
+                        Thu nhập
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in customers %}
+                <tr>
+                    <td>
+                        {{p.id}}
+                    </td>
+                    <td>
+                        {{p.full_name}}
+                    </td>
+                    <td>
+                        {{p.email}}
+                    </td>
+                    <td>
+                        {{p.age}}
+                    </td>
+                    <td>
+                        {{p.job}}
+                    </td>
+                    <td>
+                        {{p.income}}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {%  include "layout/footer.html" %}
+    </body>
+</html> 

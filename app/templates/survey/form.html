@@ -1,0 +1,54 @@
+
+<!DOCTYPE html>       
+<html>
+    <body>
+        {%  include "layout/header.html" %}
+        <div class="container">
+            <div class="form-wrapper">
+                <h2 class="title">Bắt đầu khảo sát</h2>
+                <form method="POST" action="{{ request.path }}" >
+                    {% for question in  questions%}
+                        <fieldset>
+                            <legend><h4>{{question.title}}:</h4></legend>
+                            <div>
+                                {% for answer in answers %}
+                                    {% if answer.question_id == question.id %}
+                                        <input id="{{answer.id}}" type='{{"checkbox" if question.type == "checkbox" else "radio"}}' 
+                                        class='answer-item' value='{{answer.id}}' name="answer-{{question.id}}" question-id="{{question.id}}"
+                                        onchange
+                                        /><label for="{{answer.id}}"> {{answer.content}}</label>  <br/>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                        </fieldset>
+                    {% endfor %}
+                    <br/>
+                    <input type="hidden" name="data" id="dataAnswer"/>
+                    <button type="submit" class="btn btn-primary">Gửi kết quả</button>
+                </form>
+            </div>
+        </div>
+
+        {%  include "layout/footer.html" %}
+
+        <script>
+    
+            const checkboxes = document.getElementsByClassName('answer-item')
+            for(let checkbox of checkboxes){
+                checkbox.addEventListener('change', (event) => {
+                    let categoryItemsChoose = [];
+                    for(let item of document.querySelectorAll('input[class="answer-item"]:checked')){
+                        let value = parseInt(item.value);
+                        categoryItemsChoose.push({answer: value, question: parseInt(item.getAttribute('question-id'))})
+                    }
+                   
+                    document.getElementById("dataAnswer").value = JSON.stringify(categoryItemsChoose);
+                })
+            }
+        
+          
+        
+           
+          </script>
+    </body>
+</html> 

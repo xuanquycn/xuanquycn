@@ -31,7 +31,7 @@ class Customer(db.Model):
     
     id = db.Column(db.Integer, primary_key=True)
     full_name = db.Column(db.String(250), nullable=False)
-    eamill = db.Column(db.String(250), nullable=False)
+    email = db.Column(db.String(250), nullable=False)
     job = db.Column(db.String(250), nullable=False)
     age = db.Column(db.Integer, nullable=False)
     income = db.Column(db.Integer, nullable=False)

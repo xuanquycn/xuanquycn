@@ -1,0 +1,30 @@
+
+<!DOCTYPE html>             
+<html>
+    <style>
+        table{width: 100%;  border-collapse: collapse;}
+        th, td{border: 1px solid #000000;}
+    </style>
+    <body>
+        {%  include "layout/header.html" %}
+        <div class="container">
+            <div class="form-wrapper">
+                <h2 class="title">Nhập thông tin của bạn</h2>
+                {% from "_formhelpers.html" import render_field %}
+                <form method=post>
+                    <dl>
+                    {{ render_field(form.full_name, type="text") }}
+                    {{ render_field(form.email) }}
+                    {{ render_field(form.age, type="number") }}
+                    {{ render_field(form.job) }}
+                    {{ render_field(form.income, type="number") }}
+                    </dl>
+                    <p>
+                        <button type="submit" class="btn btn-primary">Vào khảo sát</button>
+                    </p>
+                </form>
+            </div>
+        </div>
+        {%  include "layout/footer.html" %}
+    </body>
+</html> 

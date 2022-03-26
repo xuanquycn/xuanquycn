@@ -1,6 +1,16 @@
 from flask import Flask, url_for, render_template, request, redirect
-from .models import db, Question, Answer
+from wtforms import Form, BooleanField, StringField, PasswordField, validators
+from .models import db, Question, Answer, Customer, CustomerAnswer
+import ast
 from flask_migrate import Migrate
+
+
+class RegistrationForm(Form):
+    full_name = StringField('Họ tên', [validators.DataRequired(message="Vui lòng nhập họ tên")])
+    email = StringField('Email', [validators.DataRequired(message="Vui lòng nhập email")])
+    job = StringField('Nghề nghiệp', [validators.DataRequired(message="Vui lòng nhập nghề nghiệp")])
+    age = StringField('Tuổi', [validators.DataRequired(message="Vui lòng nhập tuổi")])
+    income = StringField('Thu nhập', [validators.DataRequired(message="Vui lòng nhập thu nhập")])
 
 def create_app():
     app = Flask(__name__)
@@ -17,9 +27,15 @@ def create_app():
     migrate = Migrate()
     migrate.init_app(app, db)
 
+    @app.route("/")
+    def home():
+        return "Đây là trang chủ!"
     
     @app.route("/init-db")
     def init():
+        # Question.query.delete()
+        # Answer.query.delete()
+        # db.session.commit()
         list_questions = []
         list_answer = []
         list_questions.append(Question(id= 1, title="Thiết kế", type = "radio"))
@@ -49,17 +65,66 @@ def create_app():
         list_answer.append(Answer(id = 15, content="Đen", question_id = 5))
         list_answer.append(Answer(id = 16, content="Hồng", question_id = 5))
         
-        for i in range(4):
+        for i in range(5):
             db.session.add(list_questions[i])
-        for i in range(15):
+        for i in range(16):
             db.session.add(list_answer[i])
         db.session.commit()
 
         return render_template("index.html", data={"name": "Lê Xuân Quý"})
     
-    @app.route("/news")
-    def news():
-        return "Đây là trang tin tức!"
+    @app.route('/customer', methods = ['GET'])
+    def customer():
+        customers = Customer.query.all()
+        return render_template('customer/list.html', customers= customers)
+    
+    
+    
+    
+    @app.route('/survey', methods = ['GET', 'POST'])
+    def addCustomer():
+        form = RegistrationForm(request.form)
+        if request.method == 'POST' and form.validate():
+            customer = Customer(full_name = form.full_name.data, email =form.email.data,
+                        job = form.job.data, age = form.age.data, income = form.income.data)
+            db.session.add(customer)
+            db.session.commit()
+            return redirect(url_for('survey', customer_id=customer.id))
+        return render_template('customer/add.html', form=form)
+    
+    
+    @app.route('/survey/<int:customer_id>', methods = ['GET', 'POST'])
+    def survey(customer_id):
+        questions = Question.query.all()
+        answers = Answer.query.all()
+        customer_answer = CustomerAnswer.query.all()
+        if request.method == 'GET':
+            return render_template("survey/form.html", questions = questions, answers = answers, customer_id =customer_id, customer_answer = customer_answer)
+        else:
+            data = request.form['data']
+            data = ast.literal_eval(data)
+            print(data)
+            for item in data:
+                print(item)
+                add = CustomerAnswer(answer_id= item['answer'], question_id= item['question'], customer_id = customer_id)
+                db.session.add(add)
+            db.session.commit()
+            return "Gửi khảo sát thành công!"
+    
+    
+    
+        # p = Customer.query.filter_by(id=id).first()
+        # if request.method == 'GET':
+        #return render_template("customer.html")
+        # else:
+        #     if p:
+        #         p.full_name = request.form['full_name']
+        #         p.email = request.form['email']
+        #         p.job = request.form['job']
+        #         p.age = request.form['age']
+        #         p.income = request.form['income']
+        #     db.session.commit()
+        # return redirect(url_for('customer'))
     
     
     # @app.route("/product", methods = ['GET', "DELETE"])
