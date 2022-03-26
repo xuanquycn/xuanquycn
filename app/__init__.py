@@ -1,5 +1,6 @@
 from flask import Flask, url_for, render_template, request, redirect
 from wtforms import Form, BooleanField, StringField, PasswordField, validators
+from wtforms.validators import Email
 from .models import db, Question, Answer, Customer, CustomerAnswer
 import ast
 from flask_migrate import Migrate
@@ -7,7 +8,7 @@ from flask_migrate import Migrate
 
 class RegistrationForm(Form):
     full_name = StringField('Họ tên', [validators.DataRequired(message="Vui lòng nhập họ tên")])
-    email = StringField('Email', [validators.DataRequired(message="Vui lòng nhập email")])
+    email = StringField('Email', [validators.DataRequired(message="Vui lòng nhập email"), Email("Email không đúng định dạng")])
     job = StringField('Nghề nghiệp', [validators.DataRequired(message="Vui lòng nhập nghề nghiệp")])
     age = StringField('Tuổi', [validators.DataRequired(message="Vui lòng nhập tuổi")])
     income = StringField('Thu nhập', [validators.DataRequired(message="Vui lòng nhập thu nhập")])
