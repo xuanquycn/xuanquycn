@@ -140,6 +140,6 @@ def create_app():
                 add = CustomerAnswer(answer_id= item['answer'], question_id= item['question'], customer_id = customer_id)
                 db.session.add(add)
             db.session.commit()
-            return "Gửi khảo sát thành công!"
+            return redirect(url_for('bar'))
     
     return app
