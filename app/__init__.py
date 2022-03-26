@@ -29,7 +29,7 @@ def create_app():
 
     @app.route("/")
     def home():
-        return "Đây là trang chủ!"
+        return redirect(url_for('start'))
     
     @app.route("/init-db")
     def init():
@@ -82,7 +82,7 @@ def create_app():
     
     
     @app.route('/survey', methods = ['GET', 'POST'])
-    def addCustomer():
+    def start():
         form = RegistrationForm(request.form)
         if request.method == 'POST' and form.validate():
             customer = Customer(full_name = form.full_name.data, email =form.email.data,
@@ -111,50 +111,4 @@ def create_app():
             db.session.commit()
             return "Gửi khảo sát thành công!"
     
-    
-    
-        # p = Customer.query.filter_by(id=id).first()
-        # if request.method == 'GET':
-        #return render_template("customer.html")
-        # else:
-        #     if p:
-        #         p.full_name = request.form['full_name']
-        #         p.email = request.form['email']
-        #         p.job = request.form['job']
-        #         p.age = request.form['age']
-        #         p.income = request.form['income']
-        #     db.session.commit()
-        # return redirect(url_for('customer'))
-    
-    
-    # @app.route("/product", methods = ['GET', "DELETE"])
-    # def product():
-    #     products = Product.query.all()
-    #     if request.method == 'GET':
-    #          return render_template("product/list.html", products=products)
-    #     elif request.method == "DELETE":
-    #         Product.query.filter_by(id=id).delete()
-    #         db.session.commit()
-    
-    # @app.route("/news-detail/<int:id>")
-    # @app.route("/product/<int:id>")
-    # def detail(id):
-    #     p = Product.query.filter_by(id=id).first()
-    #     return render_template("product/detail.html", data = p)
-    
-    # @app.route("/add")
-    # def add():
-    #     return "Đây là trang tin tức!"
-    
-    # @app.route('/edit/<int:id>', methods = ['GET', 'POST'])
-    # def edit(id):
-    #     p = Product.query.filter_by(id=id).first()
-    #     if request.method == 'GET':
-    #         return render_template("product/edit.html", data = p)
-    #     else:
-    #         p.name = request.form['name']
-    #         db.session.commit()
-    #         return redirect(url_for('product'))
-        
-                
     return app
