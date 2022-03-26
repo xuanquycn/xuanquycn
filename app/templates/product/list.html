@@ -1,0 +1,49 @@
+<!DOCTYPE html>             
+<html>
+    <style>
+        table{width: 100%;  border-collapse: collapse;}
+        th, td{border: 1px solid #000000;}
+    </style>
+    <body>
+        {%  include "layout/header.html" %}
+        <a href="{{url_for('add')}}">Thêm mới</a>
+        <table>
+            <thead>
+                <tr>
+                    <th style="width: 30%;">
+                        Mã sản phảm
+                    </th>
+                    <th>
+                        Tên sản phảm
+                    </th>
+                    <th>
+                        Hành động
+                    </th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for p in products %}
+                <tr>
+                    <td>
+                        {{p.id}}
+                    </td>
+                    <td>
+                        <a href="{{url_for('detail', id= p.id)}}">
+                            {{p.name}}
+                        </a>
+                    </td>
+                    <td>
+                        <a href="{{url_for('edit', id= p.id)}}">
+                            Sửa
+                        </a>
+                        <a href="{{url_for('edit', id= p.id)}}">
+                            Xóa
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {%  include "layout/footer.html" %}
+    </body>
+</html> 
