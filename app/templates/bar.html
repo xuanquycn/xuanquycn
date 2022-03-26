@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<html>
+<style>
+    .list{
+        display:flex;
+        flex-wrap: wrap;
+    }
+    .item{
+        width: 50%;
+    }
+</style>
+<body>
+    <div class="list">
+        {% for item in data %}
+        <div class="item">
+            <img src="data:image/png;base64,{{item}}"/>
+        </div>
+        {% endfor %}
+    </div>
+</body>
+
+</html>

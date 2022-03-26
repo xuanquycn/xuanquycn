@@ -2,6 +2,12 @@ from flask import Flask, url_for, render_template, request, redirect
 from .models import db, Question, Answer
 from flask_migrate import Migrate
 
+import base64
+from io import BytesIO
+from matplotlib.figure import Figure
+import numpy as np
+import pandas as pd
+
 def create_app():
     app = Flask(__name__)
     
@@ -17,6 +23,40 @@ def create_app():
     migrate = Migrate()
     migrate.init_app(app, db)
 
+    @app.route("/bar")
+    def bar():
+        data = []
+        questions = Question.query.all()
+        # Generate the figure **without using pyplot**.
+        for item in questions:
+            df = pd.read_sql_query(f"SELECT customeranswer.id, answer.content FROM customeranswer LEFT JOIN answer ON answer.id = customeranswer.answer_id WHERE customeranswer.question_id = {item.id}", db.session.bind)    
+            df = df["content"].value_counts()
+            fig = Figure()
+            ax = fig.subplots()
+            
+            if item.type=="checkbox":
+                df.plot(ax=ax, kind="bar", title=item.title, ylabel="")
+            else:
+                df.plot(ax=ax, kind="pie", title=item.title, ylabel="")
+            # Save it to a temporary buffer.
+            buf = BytesIO()
+            fig.savefig(buf, format="png")
+            # Embed the result in the html output.
+            data.append(base64.b64encode(buf.getbuffer()).decode("ascii"))
+        # fig = Figure()
+        # ax = fig.subplots()
+        
+        # ax.set_title("Thiết kế")
+        # labels = ("Không hài lòng", "Hài lòng", "Rất hài lòng")
+        # values = (47, 42, 11)
+        # explode = (0, 0, 0)
+        # ax.pie(values, labels=labels, autopct="%.2f%%", explode=explode)
+        # # Save it to a temporary buffer.
+        # buf = BytesIO()
+        # fig.savefig(buf, format="png")
+        # # Embed the result in the html output.
+        # data = base64.b64encode(buf.getbuffer()).decode("ascii")
+        return render_template("bar.html", data = data)
     
     @app.route("/init-db")
     def init():

@@ -8,6 +8,9 @@ flask = "*"
 flask-sqlalchemy = "*"
 flask-migrate = "*"
 waitress = "*"
+matplotlib = "*"
+numpy = "*"
+pandas = "*"
 
 [dev-packages]
 
