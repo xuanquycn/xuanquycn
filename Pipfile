@@ -9,6 +9,10 @@ flask-sqlalchemy = "*"
 flask-migrate = "*"
 waitress = "*"
 wtforms = "*"
+matplotlib = "*"
+numpy = "*"
+pandas = "*"
+email-validator = "*"
 
 [dev-packages]
 

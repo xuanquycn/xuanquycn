@@ -3,6 +3,10 @@ from wtforms import Form, BooleanField, StringField, PasswordField, validators
 from wtforms.validators import Email
 from .models import db, Question, Answer, Customer, CustomerAnswer
 import ast
+import base64
+from io import BytesIO
+from matplotlib.figure import Figure
+import pandas as pd
 from flask_migrate import Migrate
 
 
@@ -12,6 +16,7 @@ class RegistrationForm(Form):
     job = StringField('Nghề nghiệp', [validators.DataRequired(message="Vui lòng nhập nghề nghiệp")])
     age = StringField('Tuổi', [validators.DataRequired(message="Vui lòng nhập tuổi")])
     income = StringField('Thu nhập', [validators.DataRequired(message="Vui lòng nhập thu nhập")])
+
 
 def create_app():
     app = Flask(__name__)
@@ -32,11 +37,33 @@ def create_app():
     def home():
         return redirect(url_for('start'))
     
+    @app.route("/bar")
+    def bar():
+        data = []
+        questions = Question.query.all()
+        # Generate the figure **without using pyplot**.
+        for item in questions:
+            df = pd.read_sql_query(f"SELECT customeranswer.id, answer.content FROM customeranswer LEFT JOIN answer ON answer.id = customeranswer.answer_id WHERE customeranswer.question_id = {item.id}", db.session.bind)    
+            df = df["content"].value_counts()
+            fig = Figure()
+            ax = fig.subplots()
+            
+            if item.type=="checkbox":
+                df.plot(ax=ax, kind="bar", title=item.title, ylabel="")
+            else:
+                df.plot(ax=ax, kind="pie", title=item.title, ylabel="", autopct='%1.1f%%')
+            # Save it to a temporary buffer.
+            buf = BytesIO()
+            fig.savefig(buf, format="png")
+            # Embed the result in the html output.
+            data.append(base64.b64encode(buf.getbuffer()).decode("ascii"))
+        return render_template("bar.html", data = data)
+    
     @app.route("/init-db")
     def init():
-        # Question.query.delete()
-        # Answer.query.delete()
-        # db.session.commit()
+        Question.query.delete()
+        Answer.query.delete()
+        db.session.commit()
         list_questions = []
         list_answer = []
         list_questions.append(Question(id= 1, title="Thiết kế", type = "radio"))
@@ -65,10 +92,13 @@ def create_app():
         list_answer.append(Answer(id = 14, content="Trắng", question_id = 5))
         list_answer.append(Answer(id = 15, content="Đen", question_id = 5))
         list_answer.append(Answer(id = 16, content="Hồng", question_id = 5))
+        list_answer.append(Answer(id = 17, content="Xám", question_id = 5))
+        list_answer.append(Answer(id = 18, content="Tím", question_id = 5))
+        list_answer.append(Answer(id = 19, content="Vàng", question_id = 5))
         
-        for i in range(5):
+        for i in range(len(list_questions)):
             db.session.add(list_questions[i])
-        for i in range(16):
+        for i in range(len(list_answer)):
             db.session.add(list_answer[i])
         db.session.commit()
 
